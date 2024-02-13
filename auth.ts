@@ -29,7 +29,7 @@ export const {
 		async signIn({ user, account }) {
 			if (account?.provider !== "credentials") return true;
 
-			const existingUser = await getUserById(user.id);
+			const existingUser = await getUserById(user.id as string);
 
 			if (!existingUser?.emailVerified) return false;
 
@@ -56,6 +56,10 @@ export const {
 				session.user.role = token.role as UserRole;
 			}
 
+			if (session.user) {
+				session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
+			}
+
 			return session;
 		},
 		async jwt({ token }) {
@@ -64,6 +68,7 @@ export const {
 
 			if (!existingUser) return token;
 			token.role = existingUser.role;
+			token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
 
 			return token;
 		},
